@@ -1,0 +1,17 @@
+.env
+*.env
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.ckpt
+checkpoints/
+outputs/
+wandb/
+raw/
+work/
+.DS_Store
+Thumbs.db
