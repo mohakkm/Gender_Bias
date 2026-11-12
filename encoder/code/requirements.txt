@@ -1,0 +1,10 @@
+# Encoder team. PROVISIONAL: replace every line with the output of `python encoder/code/env.py`
+# from the Kaggle T4 session used for the final runs, then copy it into STATE.md.
+torch>=2.3
+transformers>=4.40
+tokenizers>=0.19
+sentencepiece
+scikit-learn
+scipy
+pandas
+numpy
