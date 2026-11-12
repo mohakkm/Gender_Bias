@@ -2,7 +2,7 @@
 
 Project: SERI research comparing LLM (LoRA/QLoRA) and encoder (IndicBERT/mBERT/MuRIL) models for gendered abuse detection (target label_1, English/Hindi/Tamil) on the frozen Uli data in ../data_v1/.
 
-Read first, every session: ARCHITECTURE.md, CHECKLIST.md and STATE.md in this folder, plus Part A of the team brief (a Word file, not in the repo; ask the lead if you do not have it). Update CHECKLIST.md and STATE.md before the session ends.
+Read first, every session: ARCHITECTURE.md, CHECKLIST.md and STATE.md in this folder, plus Part A of the team brief (a Word file, not in the repo; ask the lead if you do not have it) and ../TEAM_AGREEMENTS.md, which overrides the brief where they differ. Update CHECKLIST.md and STATE.md before the session ends.
 
 Rules:
 - Edit only files in this folder. Never modify ../data_v1/ or ../compare/, and never touch the other team's folder.
