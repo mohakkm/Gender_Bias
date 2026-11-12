@@ -2,7 +2,7 @@
 
 Maintained by the lead. Read this file together with your team brief (v2, 10 Oct 2026). Where the two disagree, this file wins because it is newer. Teams never edit this file. Ask the lead for changes.
 
-Last updated: 2026-11-12
+Last updated: 2026-11-12 (git autoStash setting added)
 
 ## 1. Corrections to the v2 briefs
 
@@ -10,6 +10,7 @@ Last updated: 2026-11-12
 - **Only your own NOMINATE counts.** It must be pushed by your team and change files only in your own folder. The other team's NOMINATE commit does not unlock test.csv for you.
 - **Seeds.** Tune with seed 42 only. Run seeds 43 and 44 only on the nominated configuration. Every reported final result uses all three.
 - **notok definition.** Remove the literal string `<handle replaced>`, collapse whitespace, strip. This is exactly what compare/compare.py does.
+- **Git setup (one time, every person, every clone).** Run `git config pull.rebase true` and `git config rebase.autoStash true`. The brief lists only the first. On its own it makes `git pull` fail with "cannot pull with rebase: You have unstaged changes" whenever you have unsaved edits, which is exactly when the commit routine starts. The second setting sets your edits aside during the pull and puts them back afterwards. If they conflict with someone else's change, git says so: stop and tell the lead.
 - **Working files.** Read ARCHITECTURE.md, CHECKLIST.md and STATE.md in your folder, plus Part A of your team brief, at the start of every session. There is no BRIEF.md file.
 
 ## 2. Hardware (agreed 2026-11-12)
