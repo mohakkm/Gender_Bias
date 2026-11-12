@@ -2,12 +2,12 @@
 (Tick items the moment they are done. Add the output path beside each. TEAM_AGREEMENTS.md overrides the brief.)
 
 ## Setup
-- [ ] Repo cloned; git config pull.rebase true AND rebase.autoStash true
+- [x] Repo cloned; git config pull.rebase true AND rebase.autoStash true
 - [x] Hashes of train/val/test verified against SHA256SUMS.txt (code/data_check.py, PASS 2026-11-13)
-- [x] Three working files created in encoder/ (push pending)
-- [ ] code/requirements.txt pinned from env.py on the T4 (provisional version committed)
-- [ ] Token-length study: 99th percentile and truncation rate per tokenizer (code/results/token_study.csv)
-- [ ] IndicBERT checkpoint confirmed and logged in STATE.md (proposed: ai4bharat/IndicBERTv2-MLM-only)
+- [x] Three working files created in encoder/
+- [x] code/requirements.txt pinned from env.py (dev machine; re-check on the T4 before final runs)
+- [x] Token-length study: 99th percentile and truncation rate per tokenizer (code/results/token_study.csv, max_len 192)
+- [x] IndicBERT checkpoint confirmed and logged in STATE.md (ai4bharat/IndicBERTv2-MLM-only)
 - [ ] Baseline validation scores received from the lead (D2)
 - [ ] Pilot run (200 rows) timed, full-grid estimate logged in STATE.md
 

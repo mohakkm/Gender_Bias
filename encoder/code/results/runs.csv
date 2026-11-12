@@ -1,0 +1,2 @@
+run_id,date,model,checkpoint,variant,seed,lr,bs,max_len,class_weights,epochs_run,best_epoch,val_macro_f1,val_pos_f1,val_precision,val_recall,val_macro_f1_en,val_macro_f1_hi,val_macro_f1_ta,val_auroc,train_trunc,train_min,peak_gpu_gb,gpu
+muril_notok_s42_lr3e-05_bs32_ml192,2026-11-12,muril,google/muril-base-cased,notok,42,3e-05,32,192,False,5,3,0.7656,0.6655,0.7146,0.6227,0.749,0.6983,0.7707,0.8585,0.0,8.0,5.71,NVIDIA GeForce RTX 4070 Laptop GPU

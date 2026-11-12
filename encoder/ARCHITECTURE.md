@@ -7,7 +7,7 @@ Fine-tune multilingual encoders to predict label_1 (gendered abuse directed at a
 data_v1/{train,val,test}.csv (read-only, hashes in SHA256SUMS.txt)
 -> drop empty label_1 rows (train 17,290, val 1,931 usable)
 -> variant: tok (text as is) or notok (remove '<handle replaced>', collapse whitespace, strip)
--> tokenize (max_len = smallest multiple of 8 covering >= 99% of train under both variants, cap 512; truncation rate logged)
+-> tokenize (max_len 192 for all models: 0% truncation on train; truncation rate logged per run)
 -> fine-tune on train, early stop on val macro-F1 (patience 2)
 -> NOMINATE commit ('encoder: NOMINATE ...', chosen on val, notok)
 -> nominated config: seeds 42, 43, 44 x tok, notok, then test
@@ -16,7 +16,7 @@ data_v1/{train,val,test}.csv (read-only, hashes in SHA256SUMS.txt)
 Loading, notok and metrics are imported from ../compare/compare.py (code/common.py), so val numbers use the same functions the lead uses on test.
 
 ## Models
-- IndicBERT: ai4bharat/IndicBERTv2-MLM-only (BERT-style, 278M, MIT, covers en/hi/ta). Chosen over v1 (ai4bharat/indic-bert, ALBERT) as the current AI4Bharat model. Confirm after the token study.
+- IndicBERT: ai4bharat/IndicBERTv2-MLM-only (BERT-style, 278M, MIT, covers en/hi/ta). Chosen over v1 (ai4bharat/indic-bert, ALBERT) as the current AI4Bharat model.
 - MuRIL: google/muril-base-cased
 - mBERT: bert-base-multilingual-cased
 - Optional: xlm-roberta-base
@@ -49,7 +49,7 @@ Checkpoints live in --out, never in the repo. Kaggle /kaggle/working is lost whe
 
 ## Environment
 - Development: any hardware. Final runs and every cost.json number: Kaggle or Colab T4
-- Pinned versions: TBD (run env.py on the T4 session)
+- Pinned versions: code/requirements.txt (dev machine RTX 4070 Laptop; re-check on the T4)
 
 ## Repo layout
 encoder/{CLAUDE.md, ARCHITECTURE.md, CHECKLIST.md, STATE.md}

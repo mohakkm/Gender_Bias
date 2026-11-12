@@ -7,6 +7,8 @@ For each tokenizer and variant: length percentiles (special tokens included), po
 truncation rate at candidate max lengths; [UNK] rate per language (mBERT and MuRIL can map emoji and rare
 characters to [UNK]); share of posts with Latin letters (code-mixing proxy).
 Recommended max_len = smallest multiple of 8 covering >= 99% of train under BOTH variants, capped at 512.
+Decision 2026-11-13: token_study_maxlen.json was then set by hand to 192 for every model (covers 100% of train,
+see STATE.md decisions log). Re-running this script overwrites that file, so re-apply the decision afterwards.
 Writes encoder/code/results/token_study.csv and token_study_maxlen.json.
 """
 import math

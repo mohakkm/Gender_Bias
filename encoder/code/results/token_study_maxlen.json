@@ -1,0 +1,30 @@
+{
+  "indicbert": {
+    "checkpoint": "ai4bharat/IndicBERTv2-MLM-only",
+    "max_len": 192,
+    "p99_max_over_variants": 87,
+    "max_tokens_train": 172,
+    "note": "192 for all models: 0% truncation on train, dynamic padding keeps cost low"
+  },
+  "muril": {
+    "checkpoint": "google/muril-base-cased",
+    "max_len": 192,
+    "p99_max_over_variants": 93,
+    "max_tokens_train": 149,
+    "note": "192 for all models: 0% truncation on train, dynamic padding keeps cost low"
+  },
+  "mbert": {
+    "checkpoint": "bert-base-multilingual-cased",
+    "max_len": 192,
+    "p99_max_over_variants": 139,
+    "max_tokens_train": 182,
+    "note": "192 for all models: 0% truncation on train, dynamic padding keeps cost low"
+  },
+  "xlmr": {
+    "checkpoint": "xlm-roberta-base",
+    "max_len": 192,
+    "p99_max_over_variants": 104,
+    "max_tokens_train": 179,
+    "note": "192 for all models: 0% truncation on train, dynamic padding keeps cost low"
+  }
+}

@@ -1,10 +1,10 @@
-# Encoder team. PROVISIONAL: replace every line with the output of `python encoder/code/env.py`
-# from the Kaggle T4 session used for the final runs, then copy it into STATE.md.
-torch>=2.3
-transformers>=4.40
-tokenizers>=0.19
-sentencepiece
-scikit-learn
-scipy
-pandas
-numpy
+# Encoder team. Pinned from code/env.py, 2026-11-13 (dev machine: RTX 4070 Laptop, CUDA 12.8).
+# torch from https://download.pytorch.org/whl/cu128 . Re-check on the Kaggle T4 before final runs.
+torch==2.11.0
+transformers==5.22.2
+tokenizers==0.23.3
+sentencepiece==0.2.3
+scikit-learn==1.9.1
+scipy==1.18.1
+pandas==3.1.1
+numpy==2.5.4
