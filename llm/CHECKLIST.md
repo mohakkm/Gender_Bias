@@ -5,9 +5,9 @@
 - [x] Repo cloned, git configured, hashes of train/val/test verified against SHA256SUMS.txt (train and val sanity script: code/data_check.py)
 - [ ] Three working files created in llm/ and pushed
 - [ ] code/requirements.txt with pinned versions committed
-- [ ] Token-length study: 99th percentile and truncation rate per candidate tokenizer
-- [ ] Tokens per word on 200 Hindi and 200 Tamil posts per candidate model
-- [ ] Base model(s) chosen, reasons logged in STATE.md
+- [x] Token-length study: 99th percentile and truncation rate per candidate tokenizer (code/token_study.py, code/token_study_results.csv)
+- [x] Tokens per word on 200 Hindi and 200 Tamil posts per candidate model (same files)
+- [x] Base model(s) chosen, reasons logged in STATE.md (Qwen3-1.7B and Qwen3-4B; the size is picked by val)
 - [ ] Baseline validation scores received from the lead (D2)
 
 ## Develop (train and val only, no test)

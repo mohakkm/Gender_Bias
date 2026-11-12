@@ -18,14 +18,15 @@ F1 (primary): LLM + sequence-classification head, LoRA adapters (SEQ_CLS), p_pos
 F2 (secondary): instruction prompt, answer Yes/No, completion-only loss + EOS, p_pos from the two answer-token logits.
 
 ## Components (fill in as decided)
-- Base model(s): TBD. Proposed in STATE.md: Qwen3-1.7B, Qwen3-4B, Sarvam-1
+- Base model(s): Qwen/Qwen3-1.7B (primary), Qwen/Qwen3-4B (second size). Final choice by val macro-F1 on notok.
+- Max length: 317 tokens for tok and notok (covers 99% of train in every language)
 - Quantization: QLoRA 4-bit nf4, float16 compute on a T4
 - LoRA config: r=16, alpha=32, dropout=0.05, target modules TBD
 - Training: lr, batch, epochs, scheduler TBD
 - Seeds: 42, 43, 44
 
 ## Environment
-- Platform / hardware: TBD
+- Platform / hardware: pilots on a local RTX 4060 Laptop 8 GB; final timed runs on a T4 (Kaggle or Colab)
 - code/requirements.txt pinned versions: TBD
 
 ## Repo layout
