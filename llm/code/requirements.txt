@@ -1,0 +1,17 @@
+# LLM team environment, pinned 2026-11-13 (Python 3.12).
+# torch: install the CUDA build for your GPU first, e.g. on the local laptop:
+#   pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cu118
+# Kaggle and Colab ship their own torch; keep theirs and record its version in STATE.md.
+torch==2.7.1
+transformers==4.57.3
+peft==0.21.2
+accelerate==1.15.0
+bitsandbytes==0.50.2
+datasets==5.0.1
+tokenizers==0.22.0
+huggingface_hub==0.35.0
+safetensors==0.6.2
+pandas==2.2.2
+numpy==2.1.1
+scikit-learn==1.7.1
+scipy==1.15.3
