@@ -3,25 +3,25 @@
 
 ## Setup
 - [x] Repo cloned, git configured, hashes of train/val/test verified against SHA256SUMS.txt (train and val sanity script: code/data_check.py)
-- [ ] Three working files created in llm/ and pushed
-- [ ] code/requirements.txt with pinned versions committed (written 2026-11-13, not yet committed)
+- [x] Three working files created in llm/ and pushed
+- [x] code/requirements.txt with pinned versions committed
 - [x] Pipeline scripts written and smoke-tested on a tiny random model (code/common.py, code/train_cls.py, code/e0_prompt.py)
 - [x] Token-length study: 99th percentile and truncation rate per candidate tokenizer (code/token_study.py, code/token_study_results.csv)
 - [x] Tokens per word on 200 Hindi and 200 Tamil posts per candidate model (same files)
 - [x] Base model(s) chosen, reasons logged in STATE.md (Qwen3-1.7B and Qwen3-4B; the size is picked by val)
-- [ ] Baseline validation scores received from the lead (D2)
+- [x] Baseline validation scores received from the lead (D2): TF-IDF 0.747, majority 0.410 (STATE.md)
 
 ## Develop (train and val only, no test)
 - [x] E0 zero-shot and few-shot prompting on val (best: 6-shot, 0.600 tok / 0.609 notok)
 - [x] 200-row pilot and timing, full-run estimate logged (plus a 1,000-row pilot: about 34 min per full epoch on a T4, STATE.md)
 - [x] F1 classification head: tok seed 42, notok seed 42 (0.760 / 0.756)
-- [ ] F2 generative scoring: tok seed 42, notok seed 42 (code/train_gen.py written and smoke-tested; Kaggle job queued)
-- [ ] Ablations on val: LoRA rank 16 / 32, all linear layers, 3 epochs, Qwen3-4B (Kaggle jobs running 2026-11-14; rank 8 skipped for time)
-- [ ] Optional: multi-label head (label_1 + label_3)
+- [x] F2 generative scoring: tok seed 42, notok seed 42 (0.774 / 0.768, outputs/kaggle/f2_s42_v1)
+- [x] Ablations on val: r32 0.763, all linear 0.770, 3 epochs 0.758, Qwen3-4B 0.768 (outputs/kaggle/ablate_17b_v1, qwen4b_v1; rank 8 skipped for time)
+- [ ] Optional: multi-label head (label_1 + label_3) (skipped for time)
 
 ## Nominate
-- [ ] Final configuration chosen by val macro-F1 on notok, written in STATE.md
-- [ ] NOMINATE commit pushed (before any run on test)
+- [x] Final configuration chosen by val macro-F1 on notok, written in STATE.md (A3, 2026-11-14)
+- [x] NOMINATE commit pushed (before any run on test)
 
 ## Final run and submission
 - [ ] Seeds 43 and 44 for the nominated configuration (tok and notok)
