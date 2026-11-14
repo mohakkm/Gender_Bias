@@ -24,7 +24,7 @@ Last updated: 2026-11-14 (latency protocol and p_pos rule decided, section 3)
 
 ## 3. Latency and p_pos rules (decided 2026-11-14)
 
-These apply to both teams from now on and must not change after results are seen.
+These apply to both teams from now on and must not change after results are seen. Accepted by both teams (confirmed to the lead on 2026-11-14).
 
 ### 3a. Latency protocol (the tie-break number, `latency_ms_per_post_bs1` in cost.json)
 
