@@ -2,7 +2,7 @@
 
 Maintained by the lead. Read this file together with your team brief (v2, 10 Oct 2026). Where the two disagree, this file wins because it is newer. Teams never edit this file. Ask the lead for changes.
 
-Last updated: 2026-11-12 (git autoStash setting added)
+Last updated: 2026-11-14 (latency protocol and p_pos rule decided, section 3)
 
 ## 1. Corrections to the v2 briefs
 
@@ -22,12 +22,25 @@ Last updated: 2026-11-12 (git autoStash setting added)
 - Free sessions disconnect and have usage limits. Save checkpoints every epoch and make training resumable.
 - If a final run cannot be done on a T4, tell the lead before the FINAL commit and state it in cost.json and in the paper.
 
-## 3. Still open: do not assume an answer
+## 3. Latency and p_pos rules (decided 2026-11-14)
 
-The lead will decide these before either team nominates, and will update this file.
+These apply to both teams from now on and must not change after results are seen.
 
-- **Latency measurement protocol:** whether tokenization time counts, the number of warm-up posts, and how many posts are averaged. Until then, keep your latency script in your code folder so it can be re-run under the final protocol.
-- **Threshold and p_pos:** whether a team may shift p_pos using a threshold tuned on val. Until then, submit the model's raw probabilities. compare.py scores at a threshold of 0.5.
+### 3a. Latency protocol (the tie-break number, `latency_ms_per_post_bs1` in cost.json)
+
+- **Hardware:** one NVIDIA T4 on Kaggle or Colab, single GPU visible.
+- **Model:** the nominated model exactly as used for final_predictions.csv (same precision, quantization, adapters and max length).
+- **Posts:** the first 500 rows of data_v1/val.csv in file order, notok text (rows with an empty label_1 are included). Never test posts.
+- **Method:** batch size 1, one post at a time. The timed part is everything from the raw text to p_pos: building any prompt, tokenizing, moving to the GPU, the forward pass and the softmax. Model loading is not timed.
+- **Warm-up:** run 20 posts first, untimed.
+- **Timing:** call torch.cuda.synchronize() before starting and before stopping the clock. Time all 500 posts, take the mean ms per post, repeat 3 times, and report the median of the 3 means.
+- **Script:** commit the latency script in your code folder so the lead can re-run it.
+
+### 3b. p_pos rule
+
+- final_predictions.csv holds the model's own probability for the positive class, with no post-hoc shifting, rescaling, calibration or threshold folded in. compare.py scores at a threshold of 0.5.
+- Class weights or other training-time choices are allowed but must be declared in STATE.md and in the paper.
+- A threshold tuned on val may be reported separately, clearly labelled, and is never used to pick the winner.
 
 ## 4. Data facts from the lead's checks of train and val
 
