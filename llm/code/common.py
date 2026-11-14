@@ -35,6 +35,11 @@ def nomination_commit():
     Rules from TEAM_AGREEMENTS.md: the subject starts with 'llm: NOMINATE', the commit is on
     origin/main (pushed), and it changes files only inside llm/.
     """
+    if not (ROOT / ".git").exists():
+        # Kaggle has no git checkout. kaggle/build_job.py --final only builds after checking the pushed
+        # NOMINATE commit locally with this same function, and embeds its sha as SERI_NOMINATE_SHA.
+        return os.environ.get("SERI_NOMINATE_SHA") or None
+
     def git(*args):
         r = subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, text=True, encoding="utf-8")
         if r.returncode != 0:

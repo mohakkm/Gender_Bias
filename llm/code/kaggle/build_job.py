@@ -15,11 +15,14 @@ Local test with tiny models (no Kaggle):
 import argparse
 import base64
 import json
+import shlex
+import sys
 from pathlib import Path
 
 CODE = Path(__file__).resolve().parents[1]
 ROOT = CODE.parents[1]
 DATASET_SLUG = "seri-uli-data-v1-trainval"
+TEST_DATASET_SLUG = "seri-uli-data-v1-test"  # created only after the NOMINATE commit
 SHIP = ["common.py", "train_cls.py", "e0_prompt.py", "train_gen.py"]
 PINS = ["transformers==4.57.3", "peft==0.21.2", "accelerate==1.15.0", "bitsandbytes==0.50.2"]
 
@@ -99,12 +102,22 @@ for rel, text in JOB["files"].items():
         f.write(text)
 
 src = find_data()
-if glob.glob(os.path.join(src, "**", "test*.csv"), recursive=True) or glob.glob("/kaggle/input/**/test.csv", recursive=True):
+test_dir = os.environ.get("SERI_TEST_DIR")
+test_hits = ([os.path.join(test_dir, "test.csv")] if test_dir else
+             glob.glob(os.path.join(src, "**", "test*.csv"), recursive=True) + glob.glob("/kaggle/input/**/test.csv", recursive=True))
+test_hits = [h for h in test_hits if os.path.exists(h)]
+nominate = JOB.get("nominate_sha")
+if test_hits and not nominate:
     raise SystemExit("REFUSED: a test.csv is attached. Test data must not be on Kaggle before the NOMINATE commit.")
+if nominate:
+    if not test_hits:
+        raise SystemExit("Final job but no test.csv attached.")
+    os.environ["SERI_NOMINATE_SHA"] = nominate
+    print(f"final job under NOMINATE commit {nominate[:10]}: test.csv allowed", flush=True)
 os.makedirs(os.path.join(REPO, "data_v1"), exist_ok=True)
 for name, want in JOB["sha256"].items():
     dst = os.path.join(REPO, "data_v1", name)
-    shutil.copyfile(os.path.join(src, name), dst)
+    shutil.copyfile(test_hits[0] if name == "test.csv" else os.path.join(src, name), dst)
     got = sha256(dst)
     if got != want:
         raise SystemExit(f"SHA256 mismatch for {name}: {got} != {want}")
@@ -166,14 +179,30 @@ print("\nDONE exit codes:", json.dumps({f"[{i}]": r["returncode"] for i, r in en
 '''
 
 
-def expected_hashes():
+def expected_hashes(names=("train.csv", "val.csv")):
     want = {}
     for line in (ROOT / "data_v1" / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
         parts = line.split()
-        if len(parts) == 2 and parts[1] in ("train.csv", "val.csv"):
+        if len(parts) == 2 and parts[1] in names:
             want[parts[1]] = parts[0]
-    assert set(want) == {"train.csv", "val.csv"}, want
+    assert set(want) == set(names), want
     return want
+
+
+def final_commands(script, final_args, variant, seeds):
+    """Nominated configuration on test: one training run per seed, each writing test_predictions.csv.
+    Protocol latency (TEAM_AGREEMENTS.md 3a) only on notok seed 42, the cost.json run."""
+    extra = shlex.split(final_args)
+    for flag in ("--variant", "--seed", "--predict-test", "--limit-train", "--limit-val"):
+        if flag in extra:
+            raise SystemExit(f"{flag} is set by the final job, remove it from --final-args")
+    cmds = []
+    for s in seeds:
+        cmd = [f"llm/code/{script}", *extra, "--variant", variant, "--seed", str(s), "--predict-test"]
+        if not (variant == "notok" and s == 42):
+            cmd += ["--latency-posts", "0"]
+        cmds.append(cmd)
+    return cmds
 
 
 def git_commit():
@@ -185,23 +214,44 @@ def git_commit():
 
 def main():
     a = argparse.ArgumentParser()
-    a.add_argument("--job", choices=sorted(JOBS), required=True)
+    a.add_argument("--job", choices=sorted(JOBS) + ["final"], required=True)
     a.add_argument("--owner", required=True, help="Kaggle username that owns the kernel and the dataset")
     a.add_argument("--out", required=True)
     a.add_argument("--machine", default="NvidiaTeslaT4")
+    a.add_argument("--final-script", choices=["train_cls.py", "train_gen.py"], help="final job: nominated formulation")
+    a.add_argument("--final-args", default="", help="final job: nominated hyperparameters, e.g. '--epochs 3'")
+    a.add_argument("--variant", choices=["tok", "notok"], help="final job: one variant per job (2 GPU slots)")
+    a.add_argument("--seeds", default="42,43,44")
     args = a.parse_args()
 
     files = {f"llm/code/{n}": (CODE / n).read_text(encoding="utf-8") for n in SHIP}
-    job = {"name": args.job, "commit": git_commit(), "files": files, "sha256": expected_hashes(),
-           "pins": PINS, "commands": JOBS[args.job]}
+    job = {"name": args.job, "commit": git_commit(), "files": files, "pins": PINS}
+    sources = [f"{args.owner}/{DATASET_SLUG}"]
+    slug = f"seri-llm-{args.job.replace('_', '-')}"
+    if args.job == "final":
+        if not (args.final_script and args.variant):
+            raise SystemExit("final job needs --final-script and --variant")
+        sys.path.insert(0, str(CODE))
+        import common
+        sha = common.nomination_commit()
+        if sha is None:
+            raise SystemExit("REFUSED: no pushed 'llm: NOMINATE' commit touching only llm/. Nominate first.")
+        if "+uncommitted" in job["commit"]:
+            raise SystemExit("REFUSED: llm/code has uncommitted changes. Final runs must come from committed code.")
+        job.update(nominate_sha=sha, sha256=expected_hashes(("train.csv", "val.csv", "test.csv")),
+                   commands=final_commands(args.final_script, args.final_args, args.variant,
+                                           [int(s) for s in args.seeds.split(",")]))
+        sources.append(f"{args.owner}/{TEST_DATASET_SLUG}")
+        slug = f"seri-llm-final-{args.variant}"
+    else:
+        job.update(sha256=expected_hashes(), commands=JOBS[args.job])
     payload = base64.b64encode(json.dumps(job).encode("utf-8")).decode("ascii")
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "run.py").write_text(RUNNER.replace("__JOB__", payload), encoding="utf-8", newline="\n")
-    slug = f"seri-llm-{args.job.replace('_', '-')}"
     meta = {"id": f"{args.owner}/{slug}", "title": slug, "code_file": "run.py", "language": "python",
             "kernel_type": "script", "is_private": True, "enable_gpu": True, "enable_internet": True,
-            "machine_shape": args.machine, "dataset_sources": [f"{args.owner}/{DATASET_SLUG}"],
+            "machine_shape": args.machine, "dataset_sources": sources,
             "competition_sources": [], "kernel_sources": []}
     (out / "kernel-metadata.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"built {out / 'run.py'} ({len(payload) // 1024} KB) from {job['commit']} | kernel {meta['id']}")
