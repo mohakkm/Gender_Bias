@@ -1,0 +1,12 @@
+{
+  "team": "llm",
+  "model": "Qwen3-1.7B (4-bit nf4) + LoRA r16 all-linear",
+  "formulation": "F1 classification head",
+  "hardware": "Kaggle T4 (one GPU), fp16",
+  "train_time_min": 75.52,
+  "peak_gpu_mem_gb": 3.63,
+  "trainable_params": 17436672,
+  "model_size_mb": 3941.9,
+  "latency_ms_per_post_bs1": 128.38,
+  "notes": "cost figures from the notok seed 42 run; model_size_mb = base checkpoint 3875.3 MiB (bf16 safetensors, 4063.5 MB decimal) + adapter 66.6 MiB; MiB = 2^20 bytes; latency per TEAM_AGREEMENTS.md 3a, repeat means [129.32, 127.8, 128.38] ms; train time mean over 6 runs 74.2 min"
+}

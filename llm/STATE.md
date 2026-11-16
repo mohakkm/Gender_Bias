@@ -1,18 +1,31 @@
 # STATE: LLM team
-Last updated: 2026-11-14 by Mohakk with Claude Code
-Current task: A3 nominated 2026-11-14; next: final runs on Kaggle (3 seeds x tok, notok) with test predictions
+Last updated: 2026-11-15 by Mohakk with Claude Code
+Current task: final files written and validated (PASS); FINAL commit pending lead approval
 Platform / hardware today: local Windows, RTX 4060 Laptop 8 GB, 15.7 GB RAM, Python 3.12.6, venv %USERPROFILE%\venvs\seri-llm (system packages + peft, accelerate), versions in code/requirements.txt
 
 ## Milestones
 - data_v1 hashes verified: yes, train, val and test on 2026-11-06 (hash only, test contents not read)
 - NOMINATE commit pushed: yes, 2026-11-14 (nominated configuration: A3, see Nomination)
-- FINAL commit pushed: no
+- FINAL commit pushed: no (final/ files written and validated 2026-11-15)
 
 ## Nomination (2026-11-14, approved by the lead)
 A3: F1 classification head on Qwen/Qwen3-1.7B (revision 70d244cc86), 4-bit nf4 QLoRA, LoRA r16 alpha 32 dropout 0.05 on all linear layers, lr 2e-4, 2 epochs, batch 8 x grad-accum 2, warmup 0.05, max length 317, no class weights, p_pos = raw softmax probability scored at 0.5.
 Final command per run: train_cls.py --model Qwen/Qwen3-1.7B --targets all --rank 16 --alpha 32 --lr 2e-4 --epochs 2 --variant <tok|notok> --seed <42|43|44> --predict-test (protocol latency on notok seed 42 only).
 Why: best val macro-F1 on notok (0.770), tied with F2 (0.768) and Qwen3-4B (0.768) within bootstrap noise, and the cheapest of the three (70 min vs 105 and 111 min of T4 training). Only configuration whose lead over TF-IDF (0.747) has a 95% CI above zero (+0.002 to +0.043).
 Known limits: development used seed 42 only; val is easier than test (single-annotator labels); A3's protocol latency is not yet measured (expected about 100 ms on a T4).
+
+## Final runs (2026-11-14/15, Kaggle T4, one GPU, A3, commit 78655e0)
+| Variant | Seed | Val macro-F1 (en / hi / ta) | Train min | Test predicted positive rate |
+| --- | --- | --- | --- | --- |
+| notok | 42 | 0.757 (.745 / .695 / .769) | 75.5 | 28.8% |
+| notok | 43 | 0.762 (.750 / .707 / .771) | 76.1 | 28.8% |
+| notok | 44 | 0.773 (.763 / .710 / .789) | 76.5 | 29.6% |
+| tok | 42 | 0.764 (.751 / .705 / .779) | 71.8 | 28.4% |
+| tok | 43 | 0.771 (.785 / .710 / .776) | 72.7 | 29.9% |
+| tok | 44 | 0.759 (.757 / .702 / .770) | 72.5 | 29.4% |
+Val mean: notok 0.764, tok 0.765. cost.json (notok seed 42): 75.5 min train, 3.63 GB peak, 17.4M trainable params, 3,941.9 MiB (base 3,875.3 + adapter 66.6), protocol latency 128.4 ms/post (repeat means 129.3 / 127.8 / 128.4).
+Reproducibility: the final notok seed 42 run scored 0.757 on val, not the 0.770 of development run A3 with the same settings and seed. GPU and 4-bit kernels are not bit-deterministic, so seed-to-seed spread (about 0.015) is as large as the gaps we used to pick A3. Selection was partly luck; the 3-seed mean (0.764) is the honest val number, still 0.017 above TF-IDF (0.747).
+Test labels were not used by us: assemble_final.py reads test ids only. Test scoring is the lead's single compare.py run.
 
 ## Data
 - Usable rows: train 17,290 / val 1,931 / test 3,756 (train and val confirmed by code/data_check.py)
@@ -78,6 +91,8 @@ Kaggle job f1_full_s42 v1 (2026-11-14): 134 min of T4 time. Kaggle job e0_pilot 
 
 ## Test-access log (date | what was run on test | who)
 2026-11-06 | SHA256 hash only, contents not read | Mohakk with Claude Code
+2026-11-15 | assemble_final.py read test ids only (no labels) to build final/final_predictions.csv; validate_submission.py llm PASS | Mohakk with Claude Code
+2026-11-14 | After NOMINATE 78655e0: test.csv uploaded as private Kaggle dataset mohakkmalvankar/seri-uli-data-v1-test (hash checked); final jobs seri-llm-final-notok and seri-llm-final-tok pushed (A3, seeds 42/43/44, test predictions) | Mohakk with Claude Code
 
 ## Decisions log (date | decision | reason)
 2026-11-14 | Nominate A3 (Qwen3-1.7B F1 head, LoRA r16 all-linear, 2 epochs) | Ties F2 and Qwen3-4B on val within noise at the lowest cost; lead approved
@@ -97,6 +112,6 @@ Kaggle job f1_full_s42 v1 (2026-11-14): 134 min of T4 time. Kaggle job e0_pilot 
 - Home network is slow (measured 2026-11-13: about 35 KB/s from PyPI, about 330 KB/s from Hugging Face). Qwen3-1.7B weights (about 4 GB) would take about 3.5 hours. Kaggle and Colab download fast, so real runs may be quicker there.
 
 ## Next 3 actions
-1. Upload test.csv as private Kaggle dataset <owner>/seri-uli-data-v1-test (lead approves first), then push the two final jobs (build_job.py --job final, notok and tok).
-2. Download the 6 runs, assemble_final.py, validate_submission.py llm, log test access, FINAL commit.
-3. Error analysis on val and test (per language, unanimous vs 2-vs-1, handle token, 30 hand-read errors).
+1. FINAL commit (llm/final/ plus STATE.md and CHECKLIST.md), then the lead runs compare/compare.py once.
+2. Error analysis (per language, unanimous vs 2-vs-1, handle token, 30 hand-read errors) after the comparison report.
+3. Adapter weights: upload the 6 final adapters (66.6 MiB each, in llm/outputs/kaggle/final_*_v1) somewhere durable and link them here.

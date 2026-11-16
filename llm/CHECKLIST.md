@@ -24,11 +24,11 @@
 - [x] NOMINATE commit pushed (before any run on test)
 
 ## Final run and submission
-- [ ] Seeds 43 and 44 for the nominated configuration (tok and notok)
-- [ ] Nominated configuration run on test: 3 seeds x tok, notok
-- [ ] llm/final/final_predictions.csv written
-- [ ] llm/final/cost.json written (time, peak memory, trainable parameters, model size, latency at batch size 1, hardware)
-- [ ] python compare/validate_submission.py llm prints PASS
+- [x] Seeds 43 and 44 for the nominated configuration (tok and notok)
+- [x] Nominated configuration run on test: 3 seeds x tok, notok
+- [x] llm/final/final_predictions.csv written
+- [x] llm/final/cost.json written (time, peak memory, trainable parameters, model size, latency at batch size 1, hardware)
+- [x] python compare/validate_submission.py llm prints PASS (2026-11-15)
 - [ ] FINAL commit pushed, lead told
 
 ## Wrap-up
