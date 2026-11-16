@@ -8,7 +8,8 @@
 
 Checkpoints (weights) go to --out, OUTSIDE the repo. They are never committed.
 Small outputs go to encoder/code/results/: runs.csv (one row per finished run) and val_preds/<run_id>.csv.
-Resumable: if --out/<run_id>/last.pt exists the run continues from the last finished epoch.
+Resumable only with --resume-ckpt (saves ~3 GB per epoch): if --out/<run_id>/last.pt exists the run continues.
+Without it a crashed run simply restarts (about 10 min on the dev GPU).
 max_len defaults to the token study's recommendation (results/token_study_maxlen.json).
 """
 import argparse
@@ -41,6 +42,7 @@ ap.add_argument("--wd", type=float, default=0.01)
 ap.add_argument("--class-weights", action="store_true", help="inverse-frequency weights; must be declared in STATE.md")
 ap.add_argument("--pilot", type=int, default=0, help="train on N rows for 1 epoch, report timing, log nothing to runs.csv")
 ap.add_argument("--save-best", action="store_true", help="keep the best model (save_pretrained). Use for the nominated config")
+ap.add_argument("--resume-ckpt", action="store_true", help="save model+optimizer every epoch (~3 GB) to resume after a crash; off by default")
 ap.add_argument("--out", required=True, help="directory for checkpoints, outside the repo")
 ap.add_argument("--eval-bs", type=int, default=128)
 a = ap.parse_args()
@@ -113,7 +115,7 @@ loss_fn = torch.nn.CrossEntropyLoss(weight=weight)
 
 state = {"epoch": 0, "best": -1.0, "best_epoch": 0, "bad": 0, "train_sec": 0.0, "history": []}
 last = out / "last.pt"
-if last.exists() and not a.pilot:
+if a.resume_ckpt and last.exists() and not a.pilot:
     ck = torch.load(last, map_location=dev, weights_only=False)
     model.load_state_dict(ck["model"]); opt.load_state_dict(ck["opt"]); sched.load_state_dict(ck["sched"])
     scaler.load_state_dict(ck["scaler"]); state = ck["state"]; g.set_state(ck["gen"])
@@ -187,9 +189,10 @@ while state["epoch"] < a.epochs and not done:
     else:
         state["bad"] += 1
     done = state["bad"] >= a.patience
-    torch.save({"model": model.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
-                "scaler": scaler.state_dict(), "state": state, "gen": g.get_state(), "rng": torch.get_rng_state(),
-                "cuda_rng": torch.cuda.get_rng_state_all() if fp16 else None}, last)
+    if a.resume_ckpt:
+        torch.save({"model": model.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
+                    "scaler": scaler.state_dict(), "state": state, "gen": g.get_state(), "rng": torch.get_rng_state(),
+                    "cuda_rng": torch.cuda.get_rng_state_all() if fp16 else None}, last)
 
 # ---- log the finished run (val only)
 p = np.load(out / "best_val_p.npy")
