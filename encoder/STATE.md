@@ -1,11 +1,11 @@
 # STATE: encoder team
-Last updated: 2026-11-13 by Ishaan Kumar
-Current task: seed-42 grid running (48 runs, restarted 2026-11-16 23:02); final-stage code written
+Last updated: 2026-11-21 by Ishaan Kumar
+Current task: NOMINATE pushed; final runs on a Kaggle T4 next
 Platform / hardware today: Windows laptop, NVIDIA RTX 4070 Laptop GPU 8 GB, CUDA 12.8 (development only; final cost numbers on a Kaggle/Colab T4)
 
 ## Milestones
 - data_v1 hashes verified: yes (2026-11-13, code/data_check.py)
-- NOMINATE commit pushed: no (nominated configuration: TBD)
+- NOMINATE commit pushed: yes, 2026-11-21 (IndicBERT v2, ai4bharat/IndicBERTv2-MLM-only, lr 2e-5, batch 32, max_len 192, up to 5 epochs, patience 2)
 - FINAL commit pushed: no
 
 ## Data
@@ -44,6 +44,17 @@ Pilot overestimates (warm-up cost). Full grid, 48 runs: roughly 5-7 hours on thi
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | E1 | 2026-11-13 | MuRIL | notok | 42 | lr 3e-5, bs 32, ml 192 | 0.7656 (ep 3/5) | en 0.749 hi 0.698 ta 0.771; 1.6 min/epoch on RTX 4070 Laptop |
 
+## Grid result (seed 42, val, 48 runs; full table in code/results/grid_summary.md)
+| Model | Best notok config | Best notok | Median notok (6 configs) | en | hi | ta | vs TF-IDF |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| IndicBERT v2 | lr 2e-5, bs 32 | 0.781 | 0.772 | 0.738 | 0.741 | 0.790 | +0.034 |
+| XLM-R | lr 2e-5, bs 32 | 0.777 | 0.770 | 0.767 | 0.724 | 0.790 | +0.030 |
+| MuRIL | lr 3e-5, bs 16 | 0.768 | 0.756 | 0.746 | 0.706 | 0.780 | +0.021 |
+| mBERT | lr 5e-5, bs 32 | 0.755 | 0.748 | 0.732 | 0.670 | 0.772 | +0.008 |
+- MuRIL collapsed to all-negative (0.410) at lr 5e-5 in 2 of 4 runs; no other model collapsed.
+- tok vs notok: within about 0.01 for every model, no consistent direction on val.
+- Grid train_min values are wall-clock on the dev laptop and include sleep pauses (e.g. 84 min for one XLM-R run); they are NOT cost numbers.
+
 ## Test-access log (date | what was run on test | who)
 (none)
 
@@ -53,6 +64,7 @@ Pilot overestimates (warm-up cost). Full grid, 48 runs: roughly 5-7 hours on thi
 - 2026-11-13 | Metrics imported from compare/compare.py | val numbers computed with the lead's exact functions
 - 2026-11-13 | max_len = 192 for every model (overrides the multiple-of-8-over-p99 rule) | covers 100% of train for all four tokenizers; dynamic padding means short posts cost nothing extra, so there is no reason to truncate 1%
 - 2026-11-13 | Development on the laptop RTX 4070; final runs and cost.json on a T4 | TEAM_AGREEMENTS section 2
+- 2026-11-21 | NOMINATE IndicBERT v2, lr 2e-5, bs 32, max_len 192 | highest notok val macro-F1 in the grid (the pre-declared rule, brief A4); also the highest median over its 6 configs and it never collapsed. XLM-R is 0.003 behind, inside seed noise; the rule picks IndicBERT and we do not override it after seeing results
 - 2026-11-16 | Seed 42 is retrained on the T4 for the final submission (tag final_t4), not reused from the grid | grid models are not saved, and all six final runs then share one hardware for cost.json; the grid seed-42 val score and the T4 one will differ slightly
 - 2026-11-16 | NOMINATE subject format: 'encoder: NOMINATE <model> lr<lr> bs<bs> ml<max_len>' (e.g. 'encoder: NOMINATE muril lr3e-05 bs32 ml192') | final.py refuses to open test unless a commit with exactly these tokens exists
 - 2026-11-16 | Latency and p_pos follow TEAM_AGREEMENTS section 3 (accepted 2026-11-14); code/latency.py implements 3a | tie-break rule fixed before results
@@ -65,6 +77,6 @@ Pilot overestimates (warm-up cost). Full grid, 48 runs: roughly 5-7 hours on thi
 - [UNK] rate of MuRIL/mBERT (about 25% of posts) may hurt them; not fixable without changing the shared text
 
 ## Next 3 actions
-1. Finish the grid; run code/grid_summary.py
-2. Choose the configuration (notok val macro-F1, margin over TF-IDF), push the NOMINATE commit, tell the lead
-3. Run code/final.py on a Kaggle T4, validate, push FINAL
+1. Run code/final.py --model indicbert --lr 2e-5 --bs 32 on a Kaggle T4 (lead offered the LLM team's setup)
+2. Validator PASS, then the FINAL commit; tell the lead
+3. Error analysis (B5) on test predictions

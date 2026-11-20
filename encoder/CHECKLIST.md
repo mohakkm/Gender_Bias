@@ -13,17 +13,17 @@
 - [x] First full run end to end (MuRIL notok, val macro-F1 0.766)
 
 ## Develop (train and val only, seed 42 only, no test)
-- [ ] IndicBERT: tok and notok, small grid (code/results/runs.csv)
-- [ ] MuRIL: tok and notok, small grid
-- [ ] mBERT: tok and notok, small grid
-- [ ] Optional: XLM-R tok and notok
+- [x] IndicBERT: tok and notok, small grid (code/results/runs.csv)
+- [x] MuRIL: tok and notok, small grid
+- [x] mBERT: tok and notok, small grid
+- [x] Optional: XLM-R tok and notok
 - [ ] Optional: multi-task heads (label_1, label_2, label_3)
 - [x] Latency script in code/ (code/latency.py, TEAM_AGREEMENTS 3a)
 - [x] Final-stage script with NOMINATE and T4 gates, val row-order check (code/final.py)
 - [x] Grid summary for the NOMINATE decision (code/grid_summary.py)
 
 ## Nominate
-- [ ] Final model and configuration chosen by val macro-F1 on notok, written in STATE.md
+- [x] Final model and configuration chosen by val macro-F1 on notok, written in STATE.md (IndicBERT v2, lr 2e-5, bs 32)
 - [ ] Commit starting with exactly 'encoder: NOMINATE', changing only encoder/, pushed before any test run
 
 ## Final run and submission (all cost numbers on a Kaggle/Colab T4)
