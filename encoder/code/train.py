@@ -45,6 +45,7 @@ ap.add_argument("--save-best", action="store_true", help="keep the best model (s
 ap.add_argument("--resume-ckpt", action="store_true", help="save model+optimizer every epoch (~3 GB) to resume after a crash; off by default")
 ap.add_argument("--out", required=True, help="directory for checkpoints, outside the repo")
 ap.add_argument("--eval-bs", type=int, default=128)
+ap.add_argument("--tag", default="", help="suffix for run_id, e.g. final_t4, so final runs never collide with grid runs")
 a = ap.parse_args()
 
 if a.max_len == 0:
@@ -52,7 +53,7 @@ if a.max_len == 0:
     a.max_len = rec[a.model]["max_len"]
 
 run_id = (f"{a.model}_{a.variant}_s{a.seed}_lr{a.lr:g}_bs{a.bs}_ml{a.max_len}"
-          + ("_cw" if a.class_weights else "") + (f"_pilot{a.pilot}" if a.pilot else ""))
+          + ("_cw" if a.class_weights else "") + (f"_pilot{a.pilot}" if a.pilot else "") + (f"_{a.tag}" if a.tag else ""))
 out = Path(a.out) / run_id
 out.mkdir(parents=True, exist_ok=True)
 dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -8,8 +8,9 @@
 - [x] code/requirements.txt pinned from env.py (dev machine; re-check on the T4 before final runs)
 - [x] Token-length study: 99th percentile and truncation rate per tokenizer (code/results/token_study.csv, max_len 192)
 - [x] IndicBERT checkpoint confirmed and logged in STATE.md (ai4bharat/IndicBERTv2-MLM-only)
-- [ ] Baseline validation scores received from the lead (D2)
-- [ ] Pilot run (200 rows) timed, full-grid estimate logged in STATE.md
+- [x] Baseline validation scores (computed with the lead's compare.py --baselines-val; TF-IDF 0.747)
+- [x] Pilot run (200 rows) timed, full-grid estimate logged in STATE.md
+- [x] First full run end to end (MuRIL notok, val macro-F1 0.766)
 
 ## Develop (train and val only, seed 42 only, no test)
 - [ ] IndicBERT: tok and notok, small grid (code/results/runs.csv)
@@ -17,7 +18,9 @@
 - [ ] mBERT: tok and notok, small grid
 - [ ] Optional: XLM-R tok and notok
 - [ ] Optional: multi-task heads (label_1, label_2, label_3)
-- [ ] Latency script in code/, re-runnable once the lead fixes the protocol
+- [x] Latency script in code/ (code/latency.py, TEAM_AGREEMENTS 3a)
+- [x] Final-stage script with NOMINATE and T4 gates, val row-order check (code/final.py)
+- [x] Grid summary for the NOMINATE decision (code/grid_summary.py)
 
 ## Nominate
 - [ ] Final model and configuration chosen by val macro-F1 on notok, written in STATE.md

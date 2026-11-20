@@ -36,7 +36,9 @@ Loading, notok and metrics are imported from ../compare/compare.py (code/common.
 - train.py: one run; resumable from last.pt each epoch; --pilot N for timing -> results/runs.csv, results/val_preds/<run_id>.csv
 - grid.py: the B2 grid for given models, skips finished runs
 - env.py: prints pinned versions for requirements.txt
-- To come before nominating: predict_test.py (refuses to run without an 'encoder: NOMINATE' commit), latency.py, cost.json writer
+- grid_summary.py: ranks grid configs by notok val macro-F1 vs the TF-IDF floor (for NOMINATE)
+- latency.py: TEAM_AGREEMENTS 3a latency (first 500 val rows, notok, bs 1, 20 warm-up, median of 3)
+- final.py: NOMINATE + T4 gated; 3 seeds x tok/notok, val row-order check, test predictions, final_predictions.csv, cost.json, validator
 
 ## How to run (Kaggle, GPU T4, internet on)
     git clone <repo> && cd Gender_Bias && git config pull.rebase true && git config rebase.autoStash true
